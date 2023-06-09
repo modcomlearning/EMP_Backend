@@ -25,6 +25,164 @@ Type below command in Terminal
 npm install --save body-parser cors express mongoose
 ```
 
+a) In Your **Emp_Backend** Folder create a subfolder named **models**, here we create a Mdel representing our Collection/Table that will store our employee in the Emp_DB created in step 1.
+inside models folder create a File named Employee.js and place below code inside.
+```
+let mongoose = require("mongoose")
+let schema = mongoose.Schema({
+    first_name: String,
+    last_name: String,
+    surname: String,
+    phone: String,
+    gender: String,
+    residence: String,
+    id_number: String,
+    department: String,
+    qualification: String
+},
+{
+//Table/Collection to be created
+collection: 'employees'
+})
+//We Must export the Schema to make it usable and visible to ther files in this Project.
+module.exports = mongoose.model("Employee", schema)
+    
+```
+
+b) We now create a Router which will now include the POST, GET, PUT, DELETE methods used in ABove Schema created.
+In your Emp_Backend Folder, Create a subfolder named routes, inside this folder create a file named routes.js.
+Inside routes.js place below codes.
+
+```
+//Import Express JS to be used in creating routes
+var express = require("express")
+//import our Employee Schema
+var Employee = require("../models/Employee")
+//create a Router from Express
+var router = express.Router();
+
+//POST Route - to Post data using our Employee model variables
+router.post("/add", async (req, res)=>{
+    //Provide data payload using req => ths is the Payload sent by Client, through, Angular, Curl, or even Postman
+    var post = Employee({
+        //Extract each variable from request
+        first_name: req.body.first_name,
+        last_name: req.body.last_name,
+        surname: req.body.surname,
+        phone: req.body.phone,
+        gender: req.body.gender,
+        residence: req.body.residence,
+        id_number: req.body.id_number,
+        department: req.body.department,
+        qualification: req.body.qualification
+    })
+   
+    try {
+        //Post the data 
+        var result = await post.save()
+        res.status(200).json({ 'message': 'Employee Registered' })
+    }
+    catch (err) {
+        res.status(200).json({ 'message': 'Error Occured!' })
+    }
+});
+
+//
+module.exports = router;
+```
+
+In above Code Async and await were used since there is a Long running operation, The post Promises a result that we will have to wait, then the promised result will arrive at a later point through a call back.
+The result can be a success or an Error. Finally we export this Router to make it usable and visible to other files in this project that might need it.
+
+c) In your  Emp_Backend Folder create a File named app.js.
+This will be our main File, Type the code below.
+
+```
+//Import Express JS
+var express = require("express")
+//Import Mongoose
+var mongoose = require("mongoose")
+//Import the Routes
+var routes = require("./routes/routes")
+//Import Cross Origin Module
+var cors = require("cors")
+
+//Connect to Your Mongo DB. NB: Your DB must be running
+mongoose.connect("mongodb://localhost:27017/Emp_DB", { useNewUrlParser: true })
+    .then(() => {
+        //Create an Express APP
+        var app = express()
+        //Allow client to send/parse data as JSON Object
+        app.use(express.json())
+        //Load the routes in this app and append a name that can be appended in our base URL.
+        app.use("/api", routes)
+        //Create a Server Runnning on port 3000.
+        app.listen(3000, () => {
+            console.log("Running on Base URL 127.0.0.1:3000")
+        });
+    });
+
+```
+
+Code Explanations.
+
+useNewUrlParser - The underlying MongoDB driver has deprecated their current connection string parser. Because this is a major change, they added the useNewUrlParser flag to allow users to fall back to the old parser if they find a bug in the new parser.
+
+Cross-origin resource sharing (CORS) is a browser security feature that restricts HTTP requests that are initiated from scripts running in the browser. CORS is typically required to build web applications that access APIs hosted on a different domain or origin.
+
+express.json() - This is a built-in middleware function in Express. It parses incoming requests with JSON payloads and is based on body-parser. 
+
+Below is the Folder structure of your Final App. Type: **node app.js** in terminal to run the app. See Image below
+```
+![image](https://github.com/modcomlearning/EMP_Backend/assets/66998462/5671b16f-9381-4924-9bfb-82e7d4d6ab36)
+
+
+
+Once the App is running, Open Your Postman, download postman from here:
+https://www.postman.com/downloads/
+
+Now, Your Api is running in base URL: http://127.0.0.1:3000
+We configured a /api to access our routes in routes.js
+In routes we have a /add route.
+So, the Full API for adding/post employees can be accessed at: http://127.0.0.1:3000/api/add
+
+Its a POST with below Payload.
+```
+{
+    "first_name": "John",
+    "last_name": "Kamau",
+    "surname": "Mwangi",
+    "phone": "254729225710",
+    "gender": "Male",
+    "residence": "Kawangware",
+    "id_number": "24917989",
+    "department": "IT",
+    "qualification": "Diploma"
+}
+```
+
+Test it in Postman.
+![image](https://github.com/modcomlearning/EMP_Backend/assets/66998462/e7132e62-1460-475c-990f-a0c0422d5d00)
+
+
+d) Open your Mongo Shell.
+Switch to Your Emp_DB,  Then Find records in employees Collection/Table.
+```
+db.employees.find()
+```
+Below shows the Save Employee.
+![image](https://github.com/modcomlearning/EMP_Backend/assets/66998462/1ddcaed5-968c-4a0d-99dc-927c111fed0c)
+
+
+
+
+
+
+
+
+
+
+
 
 
 
