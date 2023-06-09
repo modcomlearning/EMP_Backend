@@ -174,7 +174,15 @@ Below shows the Save Employee.
 ![image](https://github.com/modcomlearning/EMP_Backend/assets/66998462/1ddcaed5-968c-4a0d-99dc-927c111fed0c)
 
 
+You can Install Nodemon to avoid stop/running the Node server all the time.
+Visit on how to use nodemon.
+```
+npm install --global nodemon
+```
 
+Now your can run your app as  nodemon app.js
+Once run with nodemon No need to Stop/Run the node server, Just save and we are good to go!
+END.
 
 
 
