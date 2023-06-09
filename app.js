@@ -3,7 +3,7 @@ var mongoose = require("mongoose")
 var routes = require("./routes/routes")
 var cors = require("cors")
 
-
+//Mongoose used to connect to MongoDB running
 mongoose.connect("mongodb://localhost:27017/Emp_DB", { useNewUrlParser: true })
     .then(() => {
         var app = express()

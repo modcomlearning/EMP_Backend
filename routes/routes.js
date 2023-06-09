@@ -22,7 +22,7 @@ router.post("/add", async (req, res)=>{
         res.status(200).json({ 'message': 'Employee Registered' })
     }
     catch (err) {
-        res.status(200).json({ 'message': 'Error Occured!' })
+        res.status(400).json({ 'message': err.message })
     }
 });
 
