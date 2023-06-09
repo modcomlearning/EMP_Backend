@@ -133,7 +133,7 @@ Cross-origin resource sharing (CORS) is a browser security feature that restrict
 express.json() - This is a built-in middleware function in Express. It parses incoming requests with JSON payloads and is based on body-parser. 
 
 Below is the Folder structure of your Final App. Type: **node app.js** in terminal to run the app. See Image below
-```
+
 ![image](https://github.com/modcomlearning/EMP_Backend/assets/66998462/5671b16f-9381-4924-9bfb-82e7d4d6ab36)
 
 
