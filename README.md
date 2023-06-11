@@ -5,7 +5,7 @@ The API is Developed using Mongo, Node JS and Express JS, Check materials here. 
 
 ![image](https://github.com/modcomlearning/EMP_Backend/assets/66998462/8b54f158-3461-41fa-b8c3-cc4e8e999001)
 
-## Step 1 : Creating a Mongo DB.
+## Part 1 : Creating a Mongo DB.
 Open Terminal and Type: mongosh
 ![image](https://github.com/modcomlearning/EMP_Backend/assets/66998462/852486c7-d4e2-4891-98a6-dcee9b460145)
 
@@ -16,7 +16,7 @@ use Emp_DB
 The terminal now changes to Emp_DB> ..  We have a Mongo DB created.
 Next we create an API to POST, GET, PUT, DELETE Employees using Node and Express JS.
 
-## Step 2: Creating an API using Node and Express JS
+## Part 2: Creating an API using Node and Express JS
 Create a Folder Named Emp_Backend and Open this Folde rin your VS Code.
 On VS code terminal and install express, Mongoose, Cors.
 See http://coding.co.ke/mean/nodejs/10.%20MEAN_API_Part1.pdf  For more information.
@@ -184,16 +184,101 @@ Now your can run your app as  nodemon app.js
 Once run with nodemon No need to Stop/Run the node server, Just save and we are good to go!
 END.
 
+## Part 3.
+In this Part, we will get, put, delete employees from mongo DB.
+In  routes.js  add below route for vieweing all employees.
+```
+//GET
+router.get("/employees", async (req, res)=> {
+       try {
+        //Here we find all employees from Employee Model
+        var result = await Employee.find({})
+        res.status(200).json({ 'message': result })
+        }
+        //Display an Error
+        catch (err) {
+            res.status(400).json({ 'message': err.message })
+        }
+});
+
+```
+Test in Postman
+![image](https://github.com/modcomlearning/EMP_Backend/assets/66998462/6908b4e0-dc58-4597-ae30-4c2543da71f2)
+
+Below Demonstrates a Get request with a firstname body, this will search a memebr based on first name.
+```
+
+//GET by Name
+router.get("/employees/byname", async (req, res) => {
+    try {
+        var first_name = req.body.first_name
+        var result = await Employee.find({ 'first_name': first_name })
+        res.status(200).json({ 'message': result })
+    }
+    catch (err) {
+        res.status(400).json({ 'message': err.message })
+    }
+});
+```
+
+Test in postman
+![image](https://github.com/modcomlearning/EMP_Backend/assets/66998462/c31ab947-897b-4ad3-b135-18e535487d28)
 
 
 
+UPDATE.
+In routes.js, add below route to update a member qualification based on first name.
+```
+//PUT
+router.put("/employees/update", async (req, res) => {
+    try {
+        var first_name = req.body.first_name
+        var qualification = req.body.qualification
 
+        var result = await Employee.updateOne({ 'first_name': first_name }, {
+            $set: {
+                qualification: qualification
+            }
+        });
 
+        res.status(200).json({ 'message': result })
+    }
+    catch (err) {
+        res.status(400).json({ 'message': err.message })
+    }
+});
+```
 
+Test in postman
+Below we update an employee qualification given first_name.
+![image](https://github.com/modcomlearning/EMP_Backend/assets/66998462/0de921e8-9a84-4115-8160-d117cccbb582)
 
+DELETE.
 
+In this step we will delete an employee by first_name.
 
+Add below code in your routes.js File.
+```
+//DELETE
+router.delete("/employees/delete", async (req, res) => {
+    try {
+        var first_name = req.body.first_name
 
+        var result = await Employee.deleteOne({ 'first_name': first_name });
+
+        res.status(200).json({ 'message': result })
+    }
+    catch (err) {
+        res.status(400).json({ 'message': err.message })
+    }
+});
+```
+
+Test in Postman
+Here, we delete Jane record.
+![image](https://github.com/modcomlearning/EMP_Backend/assets/66998462/c82b6660-caa4-4bb7-ae4b-801b86a6ee2b)
+
+End.
 
 
 
