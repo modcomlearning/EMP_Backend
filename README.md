@@ -280,6 +280,127 @@ Here, we delete Jane record.
 
 End.
 
+# Part 4
+## Authentication with Node/Express and Mongo.
+This Part is a walkthrough to creating an module authentication with Express, Mongo and JSON Web Token. 
+
+Overview of dependencies
+express: the web framework
+jsonwebtoken: library for signing/creating and verifying/validating JSON Web Tokens (JWT), often pronounced 'JOT' for some reason.
+bcryptjs: library for hashing strings like password and then comparing the hash to strings for validation.
+morgan: library for logs that can be helpful for debugging
+mongoose: ODM for connecting and sending queries to a mongo database
+cors: adds cors headers so our frontend app can make requests
+
+a) Install Dependancies, Run below command.
+```
+npm install jsonwebtoken bcrypt mongoose-unique-validator
+```
+
+b ) We will create a user model which has the  username , email and password, This will define our users table/collection.
+
+Create a models folder(If you dont have one) inside this folder create a User.js and write below code.
+
+User.js
+```
+// models/User.js
+const mongoose = require('mongoose');
+const uniqueValidator = require('mongoose-unique-validator');
+let userSchema = mongoose.Schema({
+    name: {
+        type: String
+    },
+    email: {
+        type: String,
+        unique: true
+    },
+    password: {
+        type: String
+    }
+}, {
+    collection: 'users'
+})
+userSchema.plugin(uniqueValidator, { message: 'Email already in use.' });
+module.exports = mongoose.model('User', userSchema)
+```
+
+c) Now we create two routes for register-user and signin user.
+This routes controller will handle:
+"/register-user" receive data, hash password, create a new user
+"/signin" receive data, check if user exists, check if password is correct, generate token and send it in response
+
+d) Create a route for register-user.
+In this function we will ' bcrypt.hash(req.body.password, 10).then((hash)' to hash the password provided by the user. Othe r details will include unique email and username.
+
+Add below code in routes.js
+```
+
+router.post('/register-user', async (req, res) => {
+      bcrypt.hash(req.body.password, 10).then((hash) => {
+        const user = new User({
+          name: req.body.name,
+          email: req.body.email,
+          password: hash,
+        })
+          
+        user.save()
+          .then((response) => {
+            res.status(201).json({
+              message: 'User successfully created!',
+              result: response,
+            })
+          })
+          .catch((error) => {
+            res.status(500).json({
+              error: error,
+            })
+          })
+      })
+  })
+  ```
+  
+  Run the app.js and test the register-user in Post man.
+  ![image](https://github.com/modcomlearning/EMP_Backend/assets/66998462/196baf24-39a0-40fa-a51c-d19d49e88f9f)
+
+  
+e) Create a Signin route
+This Route will involve;
+1 . Receiving email, check if that email exists in MongoDB and give a response either Found or Not Found 
+2.  If email Found we will get the hashed password saved under that email
+3.  Verify the hashed password with the password the user Provided, We use bcrypt.
+4    **bcrypt.compare(req.body.password, user.password);**
+5.  If they Match Logged in Successful message is issed else authentication failure message is given.
+6.  After Loggedin Successful, Generate JWT Token to be used for securing and limiting who can Access the Endpoints.
+
+In routes.js add below Route.
+```
+// Login route to verify a user and get a token
+router.post("/signin", async (req, res) => {
+  try {
+    // check if the user exists
+    const user = await User.findOne({ email: req.body.email });
+    if (user) {
+      //check if password matches
+      const result = await bcrypt.compare(req.body.password, user.password);
+      if (result) {
+        // sign token and send it in response
+        const token = await jwt.sign({ email: user.email }, 'long-is-always-better');
+          res.json({'token':token, 'user': user});
+          
+
+      } else {
+        res.status(400).json({ error: "password doesn't match" });
+      }
+    } else {
+      res.status(400).json({ error: "User doesn't exist" });
+    }
+  } catch (error) {
+    res.status(400).json({ error });
+  }
+});
+```
+Run the app.js and Test Login Postman, Notice below after Login success, we can see the user details and JWT token as response. see below.
+![image](https://github.com/modcomlearning/EMP_Backend/assets/66998462/1070a918-8ee8-49d0-9dca-757ec4c43ac1)
 
 
 
