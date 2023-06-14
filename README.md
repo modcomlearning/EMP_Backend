@@ -284,21 +284,29 @@ End.
 ## Authentication with Node/Express and Mongo.
 This Part is a walkthrough to creating an module authentication with Express, Mongo and JSON Web Token. 
 
-Overview of dependencies
+**Overview of dependencies**
+
 express: the web framework
+
 jsonwebtoken: library for signing/creating and verifying/validating JSON Web Tokens (JWT), often pronounced 'JOT' for some reason.
+
 bcryptjs: library for hashing strings like password and then comparing the hash to strings for validation.
-morgan: library for logs that can be helpful for debugging
+
 mongoose: ODM for connecting and sending queries to a mongo database
+
 cors: adds cors headers so our frontend app can make requests.
+
 Useful Links;
 https://jwt.io/
+
 https://en.wikipedia.org/wiki/Bcrypt
 
 Bcrypt. How its works.
+
 A Unique text in generated using an algorithm - This text is called a Salt.
 The password provided is hashed from plain text to cypher text usng an algorithm
 The Salt and the hashed password are combined to form a complex hashed string.
+
 Read More: https://blog.logrocket.com/password-hashing-node-js-bcrypt/
 
 ![image](https://github.com/modcomlearning/EMP_Backend/assets/66998462/571c7669-186a-43fa-87cb-c8a908db8d8a)
@@ -336,8 +344,11 @@ module.exports = mongoose.model('User', userSchema)
 ```
 
 c) Now we create two routes for register-user and signin user.
+
 This routes controller will handle:
+
 "/register-user" receive data, hash password, create a new user
+
 "/signin" receive data, check if user exists, check if password is correct, generate token and send it in response
 
 d) Create a route for register-user.
@@ -374,15 +385,23 @@ router.post('/register-user', async (req, res) => {
 
   
 e) Create a Signin route
+
 This Route will involve;
+
 1 . Receiving email, check if that email exists in MongoDB and give a response either Found or Not Found 
+
 2.  If email Found we will get the hashed password saved under that email
-3.  Verify the hashed password with the password the user Provided, We use bcrypt.
+
+3.  Verify the hashed password with the password the user Provided, We use bcrypt. 
+
 4    **bcrypt.compare(req.body.password, user.password);**
+
 5.  If they Match Logged in Successful message is issed else authentication failure message is given.
+
 6.  After Loggedin Successful, Generate JWT Token to be used for securing and limiting who can Access the Endpoints.
 
 In routes.js add below Route.
+
 ```
 // Login route to verify a user and get a token
 router.post("/signin", async (req, res) => {
@@ -410,12 +429,17 @@ router.post("/signin", async (req, res) => {
 });
 ```
 Run the app.js and Test Login Postman, Notice below after Login success, we can see the user details and JWT token as response. see below.
+
 ![image](https://github.com/modcomlearning/EMP_Backend/assets/66998462/1070a918-8ee8-49d0-9dca-757ec4c43ac1)
 
 ## Authentication routes/APIs with JWT Token.
-Imagine yourself registering for a few days long conference about JavaScript. Before you go there, you have to enter your information and get a ticket. Once you reach the conference, security checks your ticket, ID, and give you a special "guest card". With that card, you can enter the conference area, leave it, and come back whenever you want. You don't have to give all of your personal information over and over again, nor show your ticket and ID. How is that? It all thanks to the "guest card". Now think, what if there were no tickets nor "ID cards" for such events. Then you would have to prove your credentials in a very tedious way, every time you enter the area.
+Imagine yourself registering for a few days long conference about JavaScript. Before you go there, you have to enter your information and get a ticket. Once you reach the conference, security checks your ticket, ID, and give you a special "guest card". With that card, you can enter the conference area, leave it, and come back whenever you want. 
 
-In terms of web applications, this situation is not very different. Some of the paths on various websites are visible only for the registered users. It would be very impractical to ask the user to log in on each different route. One of the solutions can be storing cookies and sending them back and forth between the client and the server. Another way is called authorization token. To be more precise, JWT - JSON Web Token.
+You don't have to give all of your personal information over and over again, nor show your ticket and ID. How is that? It all thanks to the "guest card". Now think, what if there were no tickets nor "ID cards" for such events. Then you would have to prove your credentials in a very tedious way, every time you enter the area.
+
+In terms of web applications, this situation is not very different. Some of the paths on various websites are visible only for the registered users. It would be very impractical to ask the user to log in on each different route. 
+
+One of the solutions can be storing cookies and sending them back and forth between the client and the server. Another way is called authorization token. To be more precise, JWT - JSON Web Token.
 
 ## JWT
 These days, JWT tokens became one of the most popular and practical ways of authenticating users. So what are those JWT tokens? It is nothing else than a long string with the encoded data, that can be decoded on the server-side.
